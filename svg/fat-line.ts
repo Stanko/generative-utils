@@ -111,7 +111,7 @@ function getOuterDots(previousDot, dot, nextDot, width) {
 
 export function fatLine(
   line:IVector[], 
-  lineWidthFn:(number) => number = x => x * 30,
+  lineWidthFn:(x, totalLength) => number = (x, _) => x * 30,
   smoothing:number = 0.25
 ) {
   // Setting starting dot, based on "startingRadius"
@@ -131,7 +131,7 @@ export function fatLine(
     const currentDot = line[i];
     const nextDot = line[i + 1] || null;
 
-    const od = getOuterDots(previousDot, currentDot, nextDot, lineWidthFn(currentLength / lineLength));
+    const od = getOuterDots(previousDot, currentDot, nextDot, lineWidthFn(currentLength / lineLength, lineLength));
 
     if (line[i + 1]) {
       currentLength += getDistanceBetweenPoints(line[i], line[i + 1])
