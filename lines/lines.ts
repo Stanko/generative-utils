@@ -11,7 +11,7 @@ export class Lines {
     this.skippedLinesCount = 0;
   }
 
-  public saveLine(x1:number, y1:number, x2:number, y2:number) {  
+  public saveLine = (x1:number, y1:number, x2:number, y2:number) => {  
     for (let i = 0; i < this.lines.length; i++) {
       const current = this.lines[i];
       const isSame = 
@@ -40,15 +40,17 @@ export class Lines {
   }
 
   getShapes() {
+    // Copy lines
+    this.shapes = this.lines.map(l => {
+      return [ { x: l.x1, y: l.y1 }, { x: l.x2, y: l.y2 } ];
+    });
+    
     this.makeShapesFromLines();
 
     return this.shapes;
   }
 
   private makeShapesFromLines() {
-    // Copy lines
-    this.shapes = this.lines.map(l => [...l]);
-
     for (let i = 0; i < this.shapes.length; i++) {
       const line1 = this.shapes[i];
 
