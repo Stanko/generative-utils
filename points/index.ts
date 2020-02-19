@@ -18,7 +18,7 @@ export function isPointInCircle(point:IVector, circleCenter:IVector, radius:numb
 }
 
 export function isPointInPolygon(point:IVector, polygon:IVector[]) {
-  const isInside = inside(polygonObjectToArray(polygon), point);
+  const isInside = inside(polygonObjectToArray(polygon), [point.x, point.y]);
 
   if (isInside === 0) {
     return 'EDGE';
@@ -29,6 +29,18 @@ export function isPointInPolygon(point:IVector, polygon:IVector[]) {
   }
 
   return false;
+}
+
+export function isPolygonInPolygon(innerPolygon:IVector[], polygon:IVector[]) {
+  for (let i = 0; i < innerPolygon.length; i++) {
+    const point = innerPolygon[i];
+
+    if (!isPointInPolygon(point, polygon)) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 export function getPointOnLine(start:IVector, end:IVector, position:number = null):IVector {
