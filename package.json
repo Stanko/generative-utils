@@ -1,6 +1,6 @@
 {
   "name": "generative-utils",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Utils I use while creating generative art, mostly geometry function",
   "main": "index.js",
   "scripts": {
