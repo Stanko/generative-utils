@@ -41,3 +41,7 @@ export function getVectorVelocity(v) {
 
   return Math.sqrt(x * x + y * y);
 }
+
+export function getVectorAngle(v:IVector){
+  return Math.atan2(v.y, v.x);
+}

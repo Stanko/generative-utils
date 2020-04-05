@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/Stanko/generative-utils#readme",
   "dependencies": {
+    "@mathigon/fermat": "^0.3.6",
     "node-sass": "^4.13.1",
     "parcel-bundler": "^1.12.4",
     "robust-point-in-polygon": "^1.0.3",
