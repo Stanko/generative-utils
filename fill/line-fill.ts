@@ -1,4 +1,4 @@
-import { Polygon, Point, intersections, Line, Circle } from '@mathigon/fermat'
+import { Polygon, Point, intersections, Line } from '@mathigon/fermat'
 import { IVector } from '../vectors';
 import { getPointOnLine } from '../points';
 import { getLineLength } from '../lines';
@@ -10,7 +10,6 @@ interface IUserOptions {
   randomizePosition?: number;
   bezier?: number;
   bezierLengthFactor?: number;
-  sort?: boolean;
 }
 
 interface IOptions {
@@ -20,7 +19,6 @@ interface IOptions {
   randomizePosition: number;
   bezier: number;
   bezierLengthFactor: number;
-  sort: boolean;
 }
 
 const defaultOptions:IOptions = {
@@ -30,7 +28,6 @@ const defaultOptions:IOptions = {
   randomizePosition: 3,
   bezier: 0,
   bezierLengthFactor: 30,
-  sort: false,
 }
 
 export function lineFill(
@@ -88,12 +85,14 @@ export function lineFill(
   } while (i.length > 1)
 
   do {
+    // Start translating right away, as we already added initial line
     backwardLine = backwardLine.translate(translateBackward);
 
     i = intersections(polygon, backwardLine);
 
     if (i.length > 1) {
-      lines.push(i);
+      // Adding lines at the start of the array to keep them sorted
+      lines.unshift(i);
     }
   } while (i.length > 1)
 
@@ -127,7 +126,7 @@ export function lineFill(
       const c1 = getPointOnLine(l[0], l[1], 0.1 + Math.random() * 0.4);
       const c2 = getPointOnLine(l[0], l[1], 0.5 + Math.random() * 0.4);
 
-      const bezierFactor = getLineLength(l) / options.bezierLengthFactor;
+      const bezierFactor = getLineLength(l) / options.bezierLengthFactor * options.bezier;
 
       return [
         // first point
