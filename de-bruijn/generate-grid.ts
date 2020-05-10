@@ -283,6 +283,10 @@ export function generateGrid(
         y: p.y + averageCenter.y,
       };
     });
+    rhombus.center = {
+      x: rhombus.center.x + averageCenter.x,
+      y: rhombus.center.y + averageCenter.y,
+    };
   });
   
   return allRhombuses;

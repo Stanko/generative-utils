@@ -67,3 +67,19 @@ export function getAngleBetweenThreeDots(a, b, c) {
 
   return angle;
 }
+
+export function getPointOnEllipse(center, a, b, angle) {
+  const sign = 
+    (angle >= 0 && angle <= Math.PI / 2) || // Do I need <= ?
+    (angle > Math.PI * 1.5 && angle <= Math.PI * 2)
+    ? 1 : - 1;
+
+  const x = center.x + sign * (a * b / Math.sqrt(b * b + a * a * (Math.tan(angle) * Math.tan(angle))));
+
+  const y = center.y + sign * (a * b * Math.tan(angle) / Math.sqrt(b * b + a * a * (Math.tan(angle) * Math.tan(angle))));
+
+  return {
+    x,
+    y,
+  }
+}
