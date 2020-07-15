@@ -1,12 +1,16 @@
 import Circle from "./circle";
 import { getDistanceBetweenPoints } from "../points"
 
+interface ITopLeft {
+  x: number;
+  y: number;
+}
+
 interface IOptions {
   speed?: number;
   minRadius?: number;
   maxRadius?: number;
-  x?: number;
-  y?: number;
+  topLeft?: ITopLeft;
   width: number;
   height: number;
   areaToCover?: number;
@@ -19,9 +23,10 @@ const defaultOptions:IOptions = {
   speed: 1,
   minRadius: 5,
   maxRadius: 30,
-  // radiusThreshold
-  x: 0,
-  y: 0,
+  topLeft: {
+    x: 0,
+    y: 0,
+  },
   width: 300,
   height: 300,
   // circle: IS_BROWSER ? (window as any).circle : () => {}, // p5 circle function
@@ -94,9 +99,6 @@ function checkNeighboringCircles(circles, circle, x, y, options, isNew = false) 
   return true;
 }
 
-/**
- * Depends on p5 for now
- */
 export function circlePacking(userOptions:IOptions) {
   const startTime = new Date().getTime();
 
@@ -137,10 +139,10 @@ export function circlePacking(userOptions:IOptions) {
             circle.grow();
 
             circle.isOutOfBounds = 
-              circle.x + circle.r >= options.width + options.x || 
-              circle.x - circle.r <= options.x ||
-              circle.y + circle.r >= options.height + options.y || 
-              circle.y - circle.r <= options.y;
+              circle.x + circle.r >= options.width + options.topLeft.x || 
+              circle.x - circle.r <= options.topLeft.x ||
+              circle.y + circle.r >= options.height + options.topLeft.y || 
+              circle.y - circle.r <= options.topLeft.y;
       
             // Stop it from growing if it is stuck to an edge
             if (circle.isOutOfBounds) {
@@ -155,7 +157,7 @@ export function circlePacking(userOptions:IOptions) {
 
     // Try N times
     for (let i = 0; i < 1000; i++) {
-      const c = addCircle(circles, options.width, options.height, options.x, options.y, options);
+      const c = addCircle(circles, options.width, options.height, options);
 
       if (c) {
         coveredArea += c.r * c.r * Math.PI;
@@ -196,16 +198,15 @@ export function circlePacking(userOptions:IOptions) {
 }
 
 // Add one circle
-// TODO check what x and y do
-function addCircle(circles, width, height, x, y, options) {
-  const circleCenterX = Math.random() * width + x;
-  const circleCenterY = Math.random() * height + y;
+function addCircle(circles, width, height, options) {
+  const circleCenterX = Math.random() * width + options.topLeft.x;
+  const circleCenterY = Math.random() * height + options.topLeft.y;
   
   const circleX = Math.floor(circleCenterX / (options.maxRadius * 2));
   const circleY = Math.floor(circleCenterY / (options.maxRadius * 2));
   
-  // Here's a new circle
-  let newCircle = new Circle(circleCenterX, circleCenterY, options.minRadius, options.speed, x + width, y + height);
+  // New circle
+  let newCircle = new Circle(circleCenterX, circleCenterY, options.minRadius, options.speed);
 
   // Is it in an ok spot?
   if (checkNeighboringCircles(circles, newCircle, circleX, circleY, options, true)) {
