@@ -61,11 +61,20 @@ export function drawPolygon(polygon, drawLine) {
   });
 }
 
+interface IOptions {
+  minArea?: number;
+  maxArea?: number;
+  useVertex?: boolean;
+  hackBalance?: boolean;
+  randomizeThresholdArea?: number;
+  drawLine?: (x1, y1, x2, y2) => void;
+}
+
 // TODO rewrite to class
 export function cutPolygon(
   polygon, 
   thresholdArea = 500, 
-  userOptions = {},
+  userOptions:IOptions = {},
 ) {
   const options = {
     minArea: 50,

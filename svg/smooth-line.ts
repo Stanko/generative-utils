@@ -50,7 +50,7 @@ const controlPoint = (previous, current, next, length = null, reverse = false) =
   return { x, y }
 }
 
-const getBezier = (line, index, smoothing, shouldClose) => {
+const getBezier = (line, index, smoothing, shouldClose, decimalPlaces = 3) => {
   const current = line[index];
   const prevPrev = line[(line.length + index - 2) % line.length];
   const prev = line[(line.length + index - 1) % line.length];
@@ -82,18 +82,18 @@ const getBezier = (line, index, smoothing, shouldClose) => {
     }
   }
 
-  return `C ${ cps.x },${ cps.y } ${ cpe.x },${ cpe.y } ${ current.x },${ current.y } `;
+  return ` C ${ cps.x.toFixed(decimalPlaces) },${ cps.y.toFixed(decimalPlaces) } ${ cpe.x.toFixed(decimalPlaces) },${ cpe.y.toFixed(decimalPlaces) } ${ current.x.toFixed(decimalPlaces) },${ current.y.toFixed(decimalPlaces) } `;
 }
 
-export default function smoothLine(line, smoothing = 0.25, shouldClose = false) {
-  let d = `M ${ line[0].x } ${ line[0].y }`;
+export default function smoothLine(line, smoothing = 0.25, shouldClose = false, decimalPlaces = 3) {
+  let d = `M ${ line[0].x.toFixed(decimalPlaces) },${ line[0].y.toFixed(decimalPlaces) }`;
 
   for (let i = 1; i < line.length; i++) {
-    d += getBezier(line, i, smoothing, shouldClose);
+    d += getBezier(line, i, smoothing, shouldClose, decimalPlaces);
   }
 
   if (shouldClose) {
-    d += getBezier(line, 0, smoothing, shouldClose);
+    d += getBezier(line, 0, smoothing, shouldClose, decimalPlaces);
     return `${ d } Z`
   }
 
