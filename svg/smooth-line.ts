@@ -1,7 +1,3 @@
-// Properties of a line
-// I:  - pointA (array) [x,y]: coordinates
-//     - pointB (array) [x,y]: coordinates
-// O:  - (object) { length: l, angle: a }: properties of the line
 const getAngle = (pointA, pointB) => {
   const lengthX = pointB.x - pointA.x
   const lengthY = pointB.y - pointA.y

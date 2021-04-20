@@ -3,21 +3,21 @@ export interface IVector {
   y: number,
 };
 
-export function addVectors(v1:IVector, v2:IVector):IVector {
+export function addVectors(v1: IVector, v2: IVector): IVector {
   return {
     x: v1.x + v2.x,
     y: v1.y + v2.y,
   };
 }
 
-export function multiplyVector(v:IVector, scalar:number):IVector {
+export function multiplyVector(v: IVector, scalar: number): IVector {
   return {
     x: v.x * scalar,
     y: v.y * scalar,
   };
 }
 
-export function getVector(v1:IVector, v2:IVector):IVector {
+export function getVector(v1: IVector, v2: IVector): IVector {
   return {
     x: v2.x - v1.x,
     y: v2.y - v1.y,
@@ -31,17 +31,17 @@ export function rotateVector(v, angle) {
   };
 }
 
-export function compareVectors(v1:IVector, v2:IVector):boolean {
+export function compareVectors(v1: IVector, v2: IVector): boolean {
   return v1.x === v2.x && v1.y === v2.y;
 }
 
 export function getVectorVelocity(v) {
-  const x = -v.x;
-  const y = -v.y;
+  const x = v.x;
+  const y = v.y;
 
   return Math.sqrt(x * x + y * y);
 }
 
-export function getVectorAngle(v:IVector){
+export function getVectorAngle(v: IVector) {
   return Math.atan2(v.y, v.x);
 }
