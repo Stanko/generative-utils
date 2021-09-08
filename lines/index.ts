@@ -23,6 +23,7 @@ export function getPerpendicularLine(p1:IVector, p2:IVector) {
     y: line.perpendicularVector.y
   };
 }
+
 export function getUnitVector(p1:IVector, p2:IVector) {
   const line = new Line(
     new Point(p1.x, p1.y),

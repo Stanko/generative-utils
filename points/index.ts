@@ -1,29 +1,32 @@
-import inside from "robust-point-in-polygon";
-import { multiplyVector, getVector, addVectors, IVector } from "../vectors";
-import { polygonObjectToArray } from "../polygons";
+import inside from 'robust-point-in-polygon';
+import { multiplyVector, getVector, addVectors, IVector } from '../vectors';
+import { polygonObjectToArray } from '../polygons';
 
-export function getDistanceBetweenPoints(v1:IVector, v2:IVector):number {
+export function getDistanceBetweenPoints(v1: IVector, v2: IVector): number {
   const x = v1.x - v2.x;
   const y = v1.y - v2.y;
 
   return Math.sqrt(x * x + y * y);
 }
 
-
-export function isPointInCircle(point:IVector, circleCenter:IVector, radius:number):boolean {
+export function isPointInCircle(
+  point: IVector,
+  circleCenter: IVector,
+  radius: number
+): boolean {
   const x = point.x - circleCenter.x;
   const y = point.y - circleCenter.y;
 
   return x * x + y * y < radius * radius;
 }
 
-export function isPointInPolygon(point:IVector, polygon:IVector[]) {
+export function isPointInPolygon(point: IVector, polygon: IVector[]) {
   const isInside = inside(polygonObjectToArray(polygon), [point.x, point.y]);
 
   if (isInside === 0) {
     return 'EDGE';
   }
-  
+
   if (isInside === -1) {
     return 'INSIDE';
   }
@@ -31,7 +34,10 @@ export function isPointInPolygon(point:IVector, polygon:IVector[]) {
   return false;
 }
 
-export function isPolygonInPolygon(innerPolygon:IVector[], polygon:IVector[]) {
+export function isPolygonInPolygon(
+  innerPolygon: IVector[],
+  polygon: IVector[]
+) {
   for (let i = 0; i < innerPolygon.length; i++) {
     const point = innerPolygon[i];
 
@@ -43,9 +49,13 @@ export function isPolygonInPolygon(innerPolygon:IVector[], polygon:IVector[]) {
   return true;
 }
 
-export function getPointOnLine(start:IVector, end:IVector, position:number = null):IVector {
+export function getPointOnLine(
+  start: IVector,
+  end: IVector,
+  position: number = null
+): IVector {
   if (position === null) {
-    position = Math.random()
+    position = Math.random();
   } else if (position === 0) {
     return { ...start };
   } else if (position === 1) {
@@ -53,10 +63,9 @@ export function getPointOnLine(start:IVector, end:IVector, position:number = nul
   }
 
   const vector = multiplyVector(getVector(start, end), position);
-  
+
   return addVectors(start, vector);
 }
-
 
 export function getAngleBetweenThreeDots(a, b, c) {
   const vectorBA = getVector(b, a);
@@ -69,17 +78,65 @@ export function getAngleBetweenThreeDots(a, b, c) {
 }
 
 export function getPointOnEllipse(center, a, b, angle) {
-  const sign = 
+  const sign =
     (angle >= 0 && angle <= Math.PI / 2) || // Do I need <= ?
     (angle > Math.PI * 1.5 && angle <= Math.PI * 2)
-    ? 1 : - 1;
+      ? 1
+      : -1;
 
-  const x = center.x + sign * (a * b / Math.sqrt(b * b + a * a * (Math.tan(angle) * Math.tan(angle))));
+  const x =
+    center.x +
+    sign *
+      ((a * b) /
+        Math.sqrt(b * b + a * a * (Math.tan(angle) * Math.tan(angle))));
 
-  const y = center.y + sign * (a * b * Math.tan(angle) / Math.sqrt(b * b + a * a * (Math.tan(angle) * Math.tan(angle))));
+  const y =
+    center.y +
+    sign *
+      ((a * b * Math.tan(angle)) /
+        Math.sqrt(b * b + a * a * (Math.tan(angle) * Math.tan(angle))));
 
   return {
     x,
     y,
+  };
+}
+
+export function getDistanceBetweenPointAndLine(
+  p: IVector,
+  start: IVector,
+  end: IVector
+) {
+  const l2 = getDistanceBetweenPoints(start, end);
+
+  if (l2 === 0) {
+    return getDistanceBetweenPoints(p, start);
   }
+
+  let t =
+    ((p.x - start.x) * (end.x - start.x) +
+      (p.y - start.y) * (end.y - start.y)) /
+    l2;
+
+  t = Math.max(0, Math.min(1, t));
+
+  const distToSegmentSquared = getDistanceBetweenPoints(p, {
+    x: start.x + t * (end.x - start.x),
+    y: start.y + t * (end.y - start.y),
+  });
+
+  return Math.sqrt(distToSegmentSquared);
+}
+
+export function isPointOnLine(
+  p: IVector,
+  start: IVector,
+  end: IVector,
+  epsilon: number = 0
+) {
+  const a = getDistanceBetweenPoints(p, start);
+  const b = getDistanceBetweenPoints(p, end);
+  const c = getDistanceBetweenPoints(start, end);
+
+  return Math.abs(c - (a + b)) <= epsilon;
 }
