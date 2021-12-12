@@ -1,18 +1,19 @@
-import { getDistanceBetweenPoints, getPointOnLine } from "../points"
-import { varyNumber } from "../math";
+import { getDistanceBetweenPoints, getPointOnLine } from '../points';
+import { varyNumber } from '../math';
 
 export function polygonArrayToObject(polygon) {
-  return polygon.map(point => ({ x: point[0], y: point[1] }));
+  return polygon.map((point) => ({ x: point[0], y: point[1] }));
 }
 
 export function polygonObjectToArray(polygon) {
-  return polygon.map(point => [ point.x, point.y ]);
+  return polygon.map((point) => [point.x, point.y]);
 }
 
 export function generateConvexPolygon(
   maxPolygonPoints = 5,
   r = 50,
-  center = { x: 100, y: 100 }
+  center = { x: 100, y: 100 },
+  radiusRandomFactor = 0
 ) {
   const startAngle = Math.random() * Math.PI * 2;
 
@@ -31,10 +32,20 @@ export function generateConvexPolygon(
     angles.push(totalAngle);
   }
 
-  return angles.map(angle => ({
-    x: Math.cos(angle) * r + center.x,
-    y: Math.sin(angle) * r + center.y,
-  }));
+  return angles.map((angle) => {
+    let radius = r;
+
+    if (radiusRandomFactor !== 0) {
+      const min = 1 - radiusRandomFactor;
+
+      radius = (min + (Math.random() + radiusRandomFactor * 2)) * radius;
+    }
+
+    return {
+      x: Math.cos(angle) * radius + center.x,
+      y: Math.sin(angle) * radius + center.y,
+    };
+  });
 }
 
 export function polygonArea(polygon) {
@@ -46,8 +57,8 @@ export function polygonArea(polygon) {
     let subX = polygon[i == polygon.length - 1 ? 0 : i + 1].x;
     let subY = polygon[i].y;
 
-    total += (addX * addY * 0.5);
-    total -= (subX * subY * 0.5);
+    total += addX * addY * 0.5;
+    total -= subX * subY * 0.5;
   }
 
   return Math.abs(total);
@@ -56,7 +67,7 @@ export function polygonArea(polygon) {
 export function drawPolygon(polygon, drawLine) {
   polygon.forEach((start, index) => {
     const end = polygon[(index + 1) % polygon.length];
-    
+
     drawLine(start.x, start.y, end.x, end.y);
   });
 }
@@ -72,9 +83,9 @@ interface IOptions {
 
 // TODO rewrite to class
 export function cutPolygon(
-  polygon, 
-  thresholdArea = 500, 
-  userOptions:IOptions = {},
+  polygon,
+  thresholdArea = 500,
+  userOptions: IOptions = {}
 ) {
   const options = {
     minArea: 50,
@@ -84,7 +95,7 @@ export function cutPolygon(
     randomizeThresholdArea: 0.3,
     drawLine: (x1, y1, x2, y2) => {},
     ...userOptions,
-  }
+  };
   const areOfPolygon = polygonArea(polygon);
 
   if (areOfPolygon < thresholdArea && polygon.length === 4) {
@@ -103,7 +114,7 @@ export function cutPolygon(
       p1 = polygon[1];
       p2 = polygon[3];
     }
-    
+
     options.drawLine(p1.x, p1.y, p2.x, p2.y);
 
     return;
@@ -134,25 +145,30 @@ export function cutPolygon(
 
   const edgeOneStart = polygon[0];
   const edgeOneEnd = polygon[1];
-  
-  const point1 = getPointOnLine(edgeOneStart, edgeOneEnd, 0.4 + Math.random() * 0.2); 
+
+  const point1 = getPointOnLine(
+    edgeOneStart,
+    edgeOneEnd,
+    0.4 + Math.random() * 0.2
+  );
 
   const edgeTwoStartIndex = Math.floor(polygon.length / 2);
   const edgeTwoStart = polygon[edgeTwoStartIndex];
   const edgeTwoEnd = polygon[edgeTwoStartIndex + 1];
-  
-  const isOdd = polygon.length % 2 === 1; 
-  const isEven = polygon.length % 2 === 0; 
 
-  const point2 = (isOdd || options.useVertex) ?
-    edgeTwoEnd :
-    getPointOnLine(edgeTwoStart, edgeTwoEnd, 0.4 + Math.random() * 0.2);
+  const isOdd = polygon.length % 2 === 1;
+  const isEven = polygon.length % 2 === 0;
+
+  const point2 =
+    isOdd || options.useVertex
+      ? edgeTwoEnd
+      : getPointOnLine(edgeTwoStart, edgeTwoEnd, 0.4 + Math.random() * 0.2);
 
   // Split into two polygons
 
   // The first polygon takes all points between cut start and cut end
   const polygon1 = polygon.splice(1, edgeTwoStartIndex);
-  
+
   // Add cut start point
   polygon1.unshift(point1);
   // Add cut end point
@@ -164,12 +180,12 @@ export function cutPolygon(
   // Insert cut start right after the first point
   // which is the start of the longest edge of the original polygon
   polygon2.splice(1, 0, point1);
-  
+
   // options.hackBalance still adds a point, even it is not needed
   // this is a bug I made, but I liked the results
   // If I use this approach, I need to delete duplicated lines
   // if (isEven && !options.useVertex) {
-  if (isEven && !options.useVertex || options.hackBalance) {
+  if ((isEven && !options.useVertex) || options.hackBalance) {
     polygon2.splice(2, 0, point2);
   }
 
@@ -180,7 +196,7 @@ export function cutPolygon(
 
   if (options.randomizeThresholdArea) {
     thresholdArea1 = varyNumber(thresholdArea, options.randomizeThresholdArea);
-    
+
     if (thresholdArea1 < options.minArea) {
       thresholdArea1 = options.minArea;
     } else if (thresholdArea1 > options.maxArea) {
@@ -188,7 +204,7 @@ export function cutPolygon(
     }
 
     thresholdArea2 = varyNumber(thresholdArea, options.randomizeThresholdArea);
-    
+
     if (thresholdArea2 < options.minArea) {
       thresholdArea2 = options.minArea;
     } else if (thresholdArea2 > options.maxArea) {
