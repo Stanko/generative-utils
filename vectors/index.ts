@@ -45,3 +45,12 @@ export function getVectorVelocity(v) {
 export function getVectorAngle(v: IVector) {
   return Math.atan2(v.y, v.x);
 }
+
+export function getUnitVector(v: IVector) {
+  const velocity = getVectorVelocity(v);
+  
+  return {
+    x: v.x / velocity, 
+    y: v.y / velocity
+  }; 
+}

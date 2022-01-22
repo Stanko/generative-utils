@@ -1,5 +1,11 @@
 import { getDistanceBetweenPoints, getPointOnLine } from '../points';
 import { varyNumber } from '../math';
+import {
+  getVector,
+  getVectorAngle,
+  getVectorVelocity,
+  IVector,
+} from '../vectors';
 
 export function polygonArrayToObject(polygon) {
   return polygon.map((point) => ({ x: point[0], y: point[1] }));
@@ -214,4 +220,60 @@ export function cutPolygon(
 
   cutPolygon(polygon1, thresholdArea1, options);
   cutPolygon(polygon2, thresholdArea2, options);
+}
+
+export function getPolygonCentroid(polygon: IVector[]): IVector {
+  const polygonCopy = [...polygon];
+  const first = polygonCopy[0];
+  const last = polygonCopy[polygonCopy.length - 1];
+
+  if (first.x != last.x || first.y != last.y) {
+    polygonCopy.push(first);
+  }
+
+  let twicearea = 0;
+  let x = 0;
+  let y = 0;
+  let nPts = polygonCopy.length;
+  let p1;
+  let p2;
+  let f;
+
+  for (var i = 0, j = nPts - 1; i < nPts; j = i++) {
+    p1 = polygonCopy[i];
+    p2 = polygonCopy[j];
+    f = p1.x * p2.y - p2.x * p1.y;
+    twicearea += f;
+    x += (p1.x + p2.x) * f;
+    y += (p1.y + p2.y) * f;
+  }
+
+  f = twicearea * 3;
+
+  return { x: x / f, y: y / f };
+}
+
+export function rotatePolygon(polygon: IVector[], angle: number): IVector[] {
+  const centroid = getPolygonCentroid(polygon);
+
+  return polygon.map((p) => {
+    const vector = getVector(centroid, p);
+    const r = getVectorVelocity(vector);
+    const oldAngle = getVectorAngle(vector);
+    const newAngle = oldAngle + angle;
+
+    return {
+      x: centroid.x + Math.cos(newAngle) * r,
+      y: centroid.y + Math.sin(newAngle) * r,
+    };
+  });
+}
+
+export function movePolygon(polygon: IVector[], vector: IVector): IVector[] {
+  return polygon.map((p) => {
+    return {
+      x: p.x + vector.x,
+      y: p.y + vector.y,
+    };
+  });
 }
