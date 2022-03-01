@@ -4,11 +4,9 @@ import { getAngleBetweenThreeDots, getDistanceBetweenPoints } from '../points';
 import { getLineLength } from '../lines';
 
 export interface IVector {
-  x: number,
-  y: number,
-};
-
-
+  x: number;
+  y: number;
+}
 
 // Takes three dots and returns two dots,
 // a vector which direction is half angle between these three dots
@@ -25,10 +23,7 @@ export interface IVector {
 function getOuterDots(previousDot, dot, nextDot, width) {
   // If width is zero, we are returning the middle dot twice
   if (width === 0) {
-    return [
-      { ...dot },
-      { ...dot },
-    ];
+    return [{ ...dot }, { ...dot }];
   }
 
   const halfWidth = width / 2;
@@ -44,9 +39,9 @@ function getOuterDots(previousDot, dot, nextDot, width) {
 
     const d = getVectorVelocity(v);
     v = {
-      x: v.x / d * halfWidth,
-      y: v.y / d * halfWidth,
-    }
+      x: (v.x / d) * halfWidth,
+      y: (v.y / d) * halfWidth,
+    };
 
     const v1 = rotateVector(v, Math.PI / -2);
     const v2 = rotateVector(v, Math.PI / 2);
@@ -60,10 +55,7 @@ function getOuterDots(previousDot, dot, nextDot, width) {
       y: dot.y + v2.y,
     };
 
-    return [
-      point1,
-      point2,
-    ];
+    return [point1, point2];
   }
 
   // Angle between (previosDot, dot) vector and x axis
@@ -87,7 +79,7 @@ function getOuterDots(previousDot, dot, nextDot, width) {
   }
   const angle2 = getAngleBetweenThreeDots(previousDot, dot, {
     x: dot.x + offset, // Moving dot on x axis
-    y: dot.y
+    y: dot.y,
   });
 
   // Angle between the x axis and the half angle vector
@@ -95,12 +87,12 @@ function getOuterDots(previousDot, dot, nextDot, width) {
 
   const point1 = {
     x: dot.x + halfWidth * Math.cos(angle),
-    y: dot.y - halfWidth * Math.sin(angle)
+    y: dot.y - halfWidth * Math.sin(angle),
   };
 
   const point2 = {
     x: dot.x + halfWidth * Math.cos(angle + Math.PI),
-    y: dot.y - halfWidth * Math.sin(angle + Math.PI)
+    y: dot.y - halfWidth * Math.sin(angle + Math.PI),
   };
 
   const outerDots = [point1, point2];
@@ -108,11 +100,11 @@ function getOuterDots(previousDot, dot, nextDot, width) {
   return outerDots;
 }
 
-
 export function fatLine(
-  line:IVector[], 
-  lineWidthFn:(x, totalLength) => number = (x, _) => x * 30,
-  smoothing:number = 0.25
+  line: IVector[],
+  lineWidthFn: (x, totalLength) => number = (x, _) => x * 30,
+  smoothing: number = 0.25,
+  getDataOnly = false
 ) {
   // Setting starting dot, based on "startingRadius"
   // Spiral always starts from PI angle, that's why it's moved to the "right"
@@ -131,18 +123,33 @@ export function fatLine(
     const currentDot = line[i];
     const nextDot = line[i + 1] || null;
 
-    const od = getOuterDots(previousDot, currentDot, nextDot, lineWidthFn(currentLength / lineLength, lineLength));
+    const od = getOuterDots(
+      previousDot,
+      currentDot,
+      nextDot,
+      lineWidthFn(currentLength / lineLength, lineLength)
+    );
 
     if (line[i + 1]) {
-      currentLength += getDistanceBetweenPoints(line[i], line[i + 1])
+      currentLength += getDistanceBetweenPoints(line[i], line[i + 1]);
     }
 
     pathOuter.push(od[0]);
     pathInner.push(od[1]);
   }
 
-  const outerLine = smoothLine(pathOuter, smoothing);
-  const innerLine = smoothLine(pathInner.reverse(), smoothing).replace('M', 'L');
+  if (getDataOnly) {
+    return {
+      path1: pathOuter,
+      path2: pathInner,
+    };
+  }
 
-  return `${ outerLine } ${ innerLine } Z`;
+  const outerLine = smoothLine(pathOuter, smoothing);
+  const innerLine = smoothLine(pathInner.reverse(), smoothing).replace(
+    'M',
+    'L'
+  );
+
+  return `${outerLine} ${innerLine} Z`;
 }

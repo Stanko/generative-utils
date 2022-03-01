@@ -43,8 +43,9 @@ export function generateConvexPolygon(
 
     if (radiusRandomFactor !== 0) {
       const min = 1 - radiusRandomFactor;
+      const max = 1 + radiusRandomFactor;
 
-      radius = (min + (Math.random() + radiusRandomFactor * 2)) * radius;
+      radius = Math.random() * (max - min) + min;
     }
 
     return {

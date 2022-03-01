@@ -1,7 +1,7 @@
 export interface IVector {
-  x: number,
-  y: number,
-};
+  x: number;
+  y: number;
+}
 
 export function addVectors(v1: IVector, v2: IVector): IVector {
   return {
@@ -48,9 +48,9 @@ export function getVectorAngle(v: IVector) {
 
 export function getUnitVector(v: IVector) {
   const velocity = getVectorVelocity(v);
-  
+
   return {
-    x: v.x / velocity, 
-    y: v.y / velocity
-  }; 
+    x: v.x / velocity,
+    y: v.y / velocity,
+  };
 }
