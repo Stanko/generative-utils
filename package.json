@@ -1,5 +1,5 @@
 {
-  "name": "@muffinman/generative-utils",
+  "name": "@stanko/generative-utils",
   "version": "0.0.1",
   "description": "Utils I use while creating generative art",
   "main": "index.js",
