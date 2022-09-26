@@ -1,11 +1,9 @@
 {
-  "name": "generative-utils",
-  "version": "1.0.1",
-  "description": "Utils I use while creating generative art, mostly geometry function",
+  "name": "@muffinman/generative-utils",
+  "version": "0.0.1",
+  "description": "Utils I use while creating generative art",
   "main": "index.js",
-  "scripts": {
-    "start": "parcel index.html"
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Stanko/generative-utils.git"
@@ -18,12 +16,13 @@
   "homepage": "https://github.com/Stanko/generative-utils#readme",
   "dependencies": {
     "@mathigon/fermat": "^0.3.6",
-    "node-sass": "^7.0.0",
-    "parcel-bundler": "^1.12.4",
     "robust-point-in-polygon": "^1.0.3",
     "seedrandom": "^3.0.5"
   },
   "devDependencies": {
     "typescript": "^3.8.3"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

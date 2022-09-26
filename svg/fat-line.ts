@@ -102,7 +102,7 @@ function getOuterDots(previousDot, dot, nextDot, width) {
 
 export function fatLine(
   line: IVector[],
-  lineWidthFn: (x, totalLength) => number = (x, _) => x * 30,
+  lineWidthFn: (x, totalLength, nodeIndex) => number = (x, _) => x * 30,
   smoothing: number = 0.25,
   getDataOnly = false
 ) {
@@ -127,7 +127,7 @@ export function fatLine(
       previousDot,
       currentDot,
       nextDot,
-      lineWidthFn(currentLength / lineLength, lineLength)
+      lineWidthFn(currentLength / lineLength, lineLength, i)
     );
 
     if (line[i + 1]) {
